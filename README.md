@@ -11,7 +11,7 @@ Features:
 - Runs tools (`list_tables`, `sample_table`, `describe_table`, `execute_sql`) and provides reasoning
 - Uses Ollama for LLM inference
 
-Read the full tutorial on MLExpert.io: https://mlexpert.io/v2-bootcamp/build-ai-agent
+Read the full tutorial on MLExpert.io: [mlexpert.io/v2-bootcamp/build-ai-agent](https://mlexpert.io/v2-bootcamp/build-ai-agent)
 
 ## Install
 
