@@ -1,0 +1,13 @@
+[data-testid="stSidebar"] {
+    background-color: #1E1E2D !important;
+    border-right: 1px solid #0EA5E9 !important;  /* Secondary Blue */
+}
+
+[data-testid="stSidebar"] h2 {
+    border-bottom: 1px solid #0EA5E9;  /* Secondary Blue */
+    padding-bottom: 8px;
+}
+
+[data-testid="stChatInput"] {
+    border-color: #075985 !important;  /* Secondary Blue */
+}

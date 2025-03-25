@@ -1,0 +1,898 @@
+#!/usr/bin/env python
+
+import datetime
+import os
+import random
+import sqlite3
+
+from faker import Faker
+
+from querymancer.config import Config, seed_everything
+
+PRODUCT_CATEGORIES = [
+    "Electronics",
+    "Clothing",
+    "Home & Kitchen",
+    "Books",
+    "Sports & Outdoors",
+    "Beauty",
+    "Toys & Games",
+    "Health",
+]
+
+
+PRODUCTS = [
+    # Electronics (13 products)
+    {
+        "name": "Apple iPhone 15 Pro",
+        "description": "The latest iPhone featuring a 6.1-inch Super Retina XDR display, A17 Pro chip, and a professional camera system. Includes titanium design and all-day battery life.",
+        "category": "Electronics",
+        "price": 999.99,
+    },
+    {
+        "name": "Samsung Galaxy S24 Ultra",
+        "description": "Premium smartphone with a 6.8-inch Dynamic AMOLED display, S Pen support, and a 200MP camera system. Powered by Snapdragon 8 Gen 3 and a 5000mAh battery.",
+        "category": "Electronics",
+        "price": 1199.99,
+    },
+    {
+        "name": "Sony WH-1000XM5 Headphones",
+        "description": "Industry-leading noise canceling headphones with exceptional sound quality. Features 30-hour battery life, quick charging, and comfortable design for all-day wear.",
+        "category": "Electronics",
+        "price": 349.99,
+    },
+    {
+        "name": "Apple MacBook Air M3",
+        "description": "Thin and lightweight laptop powered by Apple's M3 chip. Features a 13.6-inch Liquid Retina display, 18-hour battery life, and a fanless design for silent operation.",
+        "category": "Electronics",
+        "price": 999.99,
+    },
+    {
+        "name": "Dell XPS 15 Laptop",
+        "description": "Premium Windows laptop with a 15.6-inch 4K OLED display, Intel Core i9 processor, NVIDIA GeForce RTX graphics, and a CNC machined aluminum chassis.",
+        "category": "Electronics",
+        "price": 1899.99,
+    },
+    {
+        "name": "Apple iPad Air",
+        "description": "Versatile tablet with M2 chip, 10.9-inch Liquid Retina display, and support for Apple Pencil and Magic Keyboard. Perfect for productivity and creativity on the go.",
+        "category": "Electronics",
+        "price": 599.99,
+    },
+    {
+        "name": "Amazon Echo Dot (5th Gen)",
+        "description": "Compact smart speaker with improved audio and Alexa voice assistant. Control your smart home, play music, get information, and more with simple voice commands.",
+        "category": "Electronics",
+        "price": 49.99,
+    },
+    {
+        "name": "LG C3 65-inch OLED TV",
+        "description": "Premium OLED TV with perfect blacks, vibrant colors, and a 120Hz refresh rate. Features webOS, HDMI 2.1, and support for Dolby Vision and Dolby Atmos.",
+        "category": "Electronics",
+        "price": 1796.99,
+    },
+    {
+        "name": "Sony PlayStation 5",
+        "description": "Next-generation gaming console with ultra-high-speed SSD, 3D audio, haptic feedback, and support for 4K gaming at up to 120fps.",
+        "category": "Electronics",
+        "price": 499.99,
+    },
+    {
+        "name": "Microsoft Xbox Series X",
+        "description": "Powerful gaming console with 12 teraflops of processing power, 4K gaming at up to 120fps, Quick Resume feature, and backward compatibility.",
+        "category": "Electronics",
+        "price": 499.99,
+    },
+    {
+        "name": "Nintendo Switch OLED",
+        "description": "Hybrid gaming console with a 7-inch OLED screen, enhanced audio, wired LAN port, and 64GB of internal storage. Play at home or on the go.",
+        "category": "Electronics",
+        "price": 349.99,
+    },
+    {
+        "name": "Apple Watch Series 9",
+        "description": "Advanced smartwatch with an always-on Retina display, health monitoring features, and seamless integration with iPhone. Track workouts, receive notifications, and more.",
+        "category": "Electronics",
+        "price": 399.99,
+    },
+    {
+        "name": "Bose QuietComfort Earbuds II",
+        "description": "Wireless noise canceling earbuds with personalized sound, secure fit, and up to 6 hours of battery life. Includes a charging case for up to 24 hours of total listening time.",
+        "category": "Electronics",
+        "price": 279.99,
+    },
+    # Clothing (13 products)
+    {
+        "name": "Levi's 501 Original Fit Jeans",
+        "description": "Iconic straight-leg jeans with a button fly and signature 5-pocket styling. Made from durable denim with a classic fit that sits at the waist.",
+        "category": "Clothing",
+        "price": 59.99,
+    },
+    {
+        "name": "Nike Air Force 1 '07",
+        "description": "Legendary basketball shoes with a classic design. Features a leather upper, Air-Sole cushioning, and a durable rubber outsole for traction.",
+        "category": "Clothing",
+        "price": 110.00,
+    },
+    {
+        "name": "The North Face Thermoball Eco Jacket",
+        "description": "Lightweight, packable insulated jacket made from recycled materials. Provides warmth even when wet and can be compressed into its own pocket for storage.",
+        "category": "Clothing",
+        "price": 199.99,
+    },
+    {
+        "name": "Adidas Ultraboost 24 Running Shoes",
+        "description": "High-performance running shoes with responsive Boost cushioning, a Primeknit upper for an adaptive fit, and a Continental rubber outsole for reliable traction.",
+        "category": "Clothing",
+        "price": 190.00,
+    },
+    {
+        "name": "Patagonia Better Sweater Fleece Jacket",
+        "description": "Versatile fleece jacket made from recycled polyester. Features a sweater-knit exterior and a soft fleece interior for comfort and warmth.",
+        "category": "Clothing",
+        "price": 149.00,
+    },
+    {
+        "name": "Ray-Ban Wayfarer Sunglasses",
+        "description": "Iconic sunglasses with a timeless design. Features acetate frames, polarized lenses, and 100% UV protection.",
+        "category": "Clothing",
+        "price": 154.00,
+    },
+    {
+        "name": "Champion Reverse Weave Hoodie",
+        "description": "Classic heavyweight hoodie with reverse weave construction to minimize shrinkage. Features a kangaroo pocket, ribbed cuffs, and an adjustable hood.",
+        "category": "Clothing",
+        "price": 60.00,
+    },
+    {
+        "name": "Lululemon Align Leggings",
+        "description": "High-rise yoga leggings made from buttery-soft Nulu fabric. Designed to provide a weightless, naked sensation for ultimate comfort during workouts.",
+        "category": "Clothing",
+        "price": 98.00,
+    },
+    {
+        "name": "Carhartt Acrylic Watch Hat",
+        "description": "Durable ribbed-knit beanie made from 100% acrylic. Features a fold-up cuff with the Carhartt label on the front. One size fits most.",
+        "category": "Clothing",
+        "price": 19.99,
+    },
+    {
+        "name": "Dr. Martens 1460 Boots",
+        "description": "Iconic 8-eye leather boots with a signature air-cushioned sole. Features Goodyear welt construction for durability and comfort.",
+        "category": "Clothing",
+        "price": 170.00,
+    },
+    {
+        "name": "Calvin Klein Cotton Stretch Boxer Briefs (3-Pack)",
+        "description": "Comfortable boxer briefs made from cotton with added stretch. Features a contoured pouch, soft waistband, and moisture-wicking properties.",
+        "category": "Clothing",
+        "price": 42.50,
+    },
+    {
+        "name": "Columbia Benton Springs Fleece Vest",
+        "description": "Lightweight fleece vest for layering. Features a collared neck, zippered security pockets, and a drawcord adjustable hem.",
+        "category": "Clothing",
+        "price": 39.99,
+    },
+    {
+        "name": "Hanes ComfortSoft T-Shirt (5-Pack)",
+        "description": "Soft cotton t-shirts for everyday wear. Features a tag-free collar, double-needle stitching for durability, and a classic fit.",
+        "category": "Clothing",
+        "price": 25.00,
+    },
+    # Home & Kitchen (13 products)
+    {
+        "name": "Instant Pot Duo 7-in-1 Pressure Cooker",
+        "description": "Versatile kitchen appliance that functions as a pressure cooker, slow cooker, rice cooker, steamer, sauté pan, yogurt maker, and warmer. Reduces cooking time by up to 70%.",
+        "category": "Home & Kitchen",
+        "price": 99.95,
+    },
+    {
+        "name": "Ninja Air Fryer Max XL",
+        "description": "Powerful air fryer with a 5.5-quart capacity and Max Crisp Technology. Cooks food with up to 75% less fat than traditional frying methods.",
+        "category": "Home & Kitchen",
+        "price": 169.99,
+    },
+    {
+        "name": "KitchenAid Stand Mixer",
+        "description": "Iconic tilt-head stand mixer with a 5-quart stainless steel bowl and 10 speed settings. Includes a coated flat beater, coated dough hook, and wire whip.",
+        "category": "Home & Kitchen",
+        "price": 399.99,
+    },
+    {
+        "name": "Nespresso Vertuo Coffee and Espresso Machine",
+        "description": "Single-serve coffee maker that brews both coffee and espresso. Features Centrifusion technology and automatic blend recognition for optimal brewing.",
+        "category": "Home & Kitchen",
+        "price": 219.95,
+    },
+    {
+        "name": "Le Creuset Enameled Cast Iron Dutch Oven",
+        "description": "Premium enameled cast iron Dutch oven with superior heat retention and distribution. Perfect for slow cooking, braising, and baking bread.",
+        "category": "Home & Kitchen",
+        "price": 369.95,
+    },
+    {
+        "name": "Vitamix 5200 Blender",
+        "description": "Professional-grade blender with a 64-ounce container and aircraft-grade stainless steel blades. Powerful enough to blend even the toughest ingredients.",
+        "category": "Home & Kitchen",
+        "price": 549.95,
+    },
+    {
+        "name": "Dyson V15 Detect Cordless Vacuum",
+        "description": "Advanced cordless vacuum with laser dust detection, an LCD screen displaying particle counts, and intelligent suction power optimization.",
+        "category": "Home & Kitchen",
+        "price": 749.99,
+    },
+    {
+        "name": "Calphalon Premier Space Saving Cookware Set",
+        "description": "10-piece nonstick cookware set that stacks neatly and saves 30% more space. Features a 3-layer nonstick interior and dishwasher-safe construction.",
+        "category": "Home & Kitchen",
+        "price": 399.99,
+    },
+    {
+        "name": "Breville Smart Oven Air Fryer Pro",
+        "description": "Versatile countertop oven with 13 cooking functions including air fry, toast, bake, broil, and slow cook. Features Element IQ for precise cooking.",
+        "category": "Home & Kitchen",
+        "price": 399.95,
+    },
+    {
+        "name": "Shark Robot Vacuum",
+        "description": "Self-cleaning robot vacuum with powerful suction, HEPA filtration, and home mapping technology. Controllable via app or voice commands.",
+        "category": "Home & Kitchen",
+        "price": 449.99,
+    },
+    {
+        "name": "Wüsthof Classic 8-Piece Knife Block Set",
+        "description": "Premium German knife set including chef's knife, bread knife, paring knife, utility knife, kitchen shears, and honing steel in a wooden block.",
+        "category": "Home & Kitchen",
+        "price": 449.95,
+    },
+    {
+        "name": "Philips Automatic Pasta Maker",
+        "description": "Countertop pasta maker that mixes, kneads, and extrudes fresh pasta in just 10 minutes. Includes 8 pasta shaping discs and measuring tools.",
+        "category": "Home & Kitchen",
+        "price": 279.95,
+    },
+    {
+        "name": "Zojirushi Rice Cooker",
+        "description": "Microcomputer-controlled rice cooker with multiple cooking functions and settings for different types of rice. Features a nonstick inner pot and keep-warm function.",
+        "category": "Home & Kitchen",
+        "price": 179.99,
+    },
+    # Books (12 products)
+    {
+        "name": "Atomic Habits by James Clear",
+        "description": "Practical guide to breaking bad habits and forming good ones. Presents a proven framework for improving every day through tiny changes that yield remarkable results.",
+        "category": "Books",
+        "price": 24.99,
+    },
+    {
+        "name": "The Midnight Library by Matt Haig",
+        "description": "Novel about a library beyond the edge of the universe containing books with alternative life possibilities. Explores regret, hope, and the infinite possibilities of life.",
+        "category": "Books",
+        "price": 18.99,
+    },
+    {
+        "name": "Educated by Tara Westover",
+        "description": "Memoir about a woman who was kept out of school as a child but went on to earn a PhD from Cambridge University. A tale of self-invention and the pursuit of knowledge.",
+        "category": "Books",
+        "price": 16.99,
+    },
+    {
+        "name": "Where the Crawdads Sing by Delia Owens",
+        "description": "Coming-of-age murder mystery set in the marshes of North Carolina. Follows a young woman who raised herself in the wilderness and becomes embroiled in a murder investigation.",
+        "category": "Books",
+        "price": 15.99,
+    },
+    {
+        "name": "Dune by Frank Herbert",
+        "description": "Science fiction epic set on the desert planet Arrakis. Explores politics, religion, ecology, and human emotion in a complex interstellar society.",
+        "category": "Books",
+        "price": 19.99,
+    },
+    {
+        "name": "The Psychology of Money by Morgan Housel",
+        "description": "Collection of 19 stories exploring the strange ways people think about money and teaching how to make better sense of a complex topic that's often misunderstood.",
+        "category": "Books",
+        "price": 19.95,
+    },
+    {
+        "name": "Sapiens: A Brief History of Humankind by Yuval Noah Harari",
+        "description": "Explores the history of Homo sapiens from the Stone Age to the 21st century, examining how biology and history have defined humanity.",
+        "category": "Books",
+        "price": 24.99,
+    },
+    {
+        "name": "The Lord of the Rings by J.R.R. Tolkien",
+        "description": "Epic fantasy trilogy following Frodo Baggins and the Fellowship on their quest to destroy the One Ring and defeat the Dark Lord Sauron.",
+        "category": "Books",
+        "price": 29.99,
+    },
+    {
+        "name": "To Kill a Mockingbird by Harper Lee",
+        "description": "Classic novel addressing racial inequality and moral growth in the American South during the 1930s, told through the eyes of a young girl named Scout Finch.",
+        "category": "Books",
+        "price": 14.99,
+    },
+    {
+        "name": "Project Hail Mary by Andy Weir",
+        "description": "Science fiction novel about an astronaut who wakes up alone on a spaceship with no memory of his mission or identity, tasked with saving Earth from extinction.",
+        "category": "Books",
+        "price": 17.99,
+    },
+    {
+        "name": "The Silent Patient by Alex Michaelides",
+        "description": "Psychological thriller about a famous painter who stops speaking after shooting her husband, and the criminal psychotherapist determined to unravel the mystery.",
+        "category": "Books",
+        "price": 16.99,
+    },
+    {
+        "name": "The 1619 Project by Nikole Hannah-Jones",
+        "description": "Collection of essays and creative works examining the legacy of slavery in contemporary American society and reframing U.S. history by placing the consequences of slavery at the center.",
+        "category": "Books",
+        "price": 29.99,
+    },
+    # Sports & Outdoors (12 products)
+    {
+        "name": "Yeti Tundra 45 Cooler",
+        "description": "Premium hard cooler with permafrost insulation that keeps ice for days. Features a bearproof design, non-slip feet, and military-grade polyester rope handles.",
+        "category": "Sports & Outdoors",
+        "price": 325.00,
+    },
+    {
+        "name": "Hydro Flask 32 oz Water Bottle",
+        "description": "Vacuum-insulated stainless steel water bottle that keeps beverages cold for up to 24 hours or hot for up to 12 hours. Features a wide mouth and durable powder coating.",
+        "category": "Sports & Outdoors",
+        "price": 44.95,
+    },
+    {
+        "name": "Garmin Forerunner 255 GPS Running Watch",
+        "description": "Advanced GPS running watch with training features, recovery insights, and up to 14 days of battery life. Includes heart rate monitoring and sleep tracking.",
+        "category": "Sports & Outdoors",
+        "price": 349.99,
+    },
+    {
+        "name": "Coleman Sundome Tent (4-Person)",
+        "description": "Weather-resistant camping tent that sets up in 10 minutes. Features a WeatherTec system with welded floors and inverted seams to keep you dry.",
+        "category": "Sports & Outdoors",
+        "price": 99.99,
+    },
+    {
+        "name": "Spalding NBA Official Game Basketball",
+        "description": "Official NBA game ball made from premium composite leather. Features deep channel design for superior control and a cushion core for exceptional feel.",
+        "category": "Sports & Outdoors",
+        "price": 59.99,
+    },
+    {
+        "name": "Osprey Atmos AG 65 Backpack",
+        "description": "High-performance backpacking pack with Anti-Gravity suspension system that contours to your body. Features an adjustable harness, integrated rain cover, and multiple pockets.",
+        "category": "Sports & Outdoors",
+        "price": 290.00,
+    },
+    {
+        "name": "Fitbit Charge 6 Fitness Tracker",
+        "description": "Advanced fitness tracker with built-in GPS, 24/7 heart rate monitoring, and sleep tracking. Includes Google Maps, Google Wallet, and 7-day battery life.",
+        "category": "Sports & Outdoors",
+        "price": 149.95,
+    },
+    {
+        "name": "TaylorMade SIM2 Max Driver",
+        "description": "High-performance golf driver with forged aluminum construction and speed-injected face for maximum distance and forgiveness.",
+        "category": "Sports & Outdoors",
+        "price": 529.99,
+    },
+    {
+        "name": "Wilson NCAA Official Football",
+        "description": "Official size and weight football with patented pebble pattern and tackified composite leather cover for enhanced grip and control.",
+        "category": "Sports & Outdoors",
+        "price": 24.99,
+    },
+    {
+        "name": "Blackburn Grid 13 Multitool",
+        "description": "Compact bicycle multitool with 13 essential functions including hex wrenches, screwdrivers, and a chain tool. Perfect for on-the-go repairs.",
+        "category": "Sports & Outdoors",
+        "price": 29.99,
+    },
+    {
+        "name": "Thule Outride Roof Bike Rack",
+        "description": "Fork-mounted bike carrier for secure and stable transportation on your vehicle's roof. Features tool-free installation and locks the bike to the carrier and carrier to the roof rack.",
+        "category": "Sports & Outdoors",
+        "price": 229.95,
+    },
+    {
+        "name": "NordicTrack Commercial 1750 Treadmill",
+        "description": "Commercial-grade treadmill with a 10-inch HD touchscreen, 3.75 CHP motor, and -3% to 15% incline control. Includes a 30-day iFit membership for interactive workouts.",
+        "category": "Sports & Outdoors",
+        "price": 1999.99,
+    },
+    # Beauty (12 products)
+    {
+        "name": "Dyson Airwrap Multi-Styler",
+        "description": "Versatile hair styling tool that curls, waves, smooths, and dries without extreme heat. Uses the Coanda effect to attract and wrap hair around the barrel.",
+        "category": "Beauty",
+        "price": 599.99,
+    },
+    {
+        "name": "Olaplex No. 3 Hair Perfector",
+        "description": "At-home hair treatment that reduces breakage and visibly strengthens hair. Reconnects broken disulfide bonds to improve hair strength and structure.",
+        "category": "Beauty",
+        "price": 30.00,
+    },
+    {
+        "name": "Drunk Elephant T.L.C. Sukari Babyfacial",
+        "description": "AHA/BHA exfoliating mask that reveals smoother, more radiant skin. Contains a 25% AHA blend, 2% BHA, and soothing antioxidants.",
+        "category": "Beauty",
+        "price": 80.00,
+    },
+    {
+        "name": "Charlotte Tilbury Pillow Talk Lip Kit",
+        "description": "Bestselling lip kit featuring a nude-pink lipstick and matching lip liner. Creates a fuller-looking, naturally beautiful lip look.",
+        "category": "Beauty",
+        "price": 54.00,
+    },
+    {
+        "name": "SK-II Facial Treatment Essence",
+        "description": "Luxurious facial essence containing over 90% Pitera, a bio-ingredient that promotes skin's natural renewal process for smoother, more radiant skin.",
+        "category": "Beauty",
+        "price": 185.00,
+    },
+    {
+        "name": "Estée Lauder Double Wear Foundation",
+        "description": "Long-wearing foundation with 24-hour staying power. Provides medium-to-full coverage with a natural, matte finish that won't change color or come off.",
+        "category": "Beauty",
+        "price": 46.00,
+    },
+    {
+        "name": "La Mer Crème de la Mer Moisturizer",
+        "description": "Iconic luxury face cream with cell-renewing Miracle Broth™. Helps heal dryness and improve the appearance of fine lines and wrinkles.",
+        "category": "Beauty",
+        "price": 190.00,
+    },
+    {
+        "name": "Sunday Riley Good Genes All-In-One Lactic Acid Treatment",
+        "description": "Exfoliating lactic acid treatment that brightens and smooths fine lines. Promotes radiance and helps improve the appearance of hyperpigmentation.",
+        "category": "Beauty",
+        "price": 85.00,
+    },
+    {
+        "name": "Tatcha The Water Cream",
+        "description": "Oil-free, water-light moisturizer for a poreless, smooth, balanced complexion. Contains Japanese nutrients and botanicals that clarify and refine skin.",
+        "category": "Beauty",
+        "price": 69.00,
+    },
+    {
+        "name": "Glossier Boy Brow",
+        "description": "All-in-one brow grooming product that thickens, fills, and shapes brows. Contains a flexible hold formula that keeps brows in place without stiffness.",
+        "category": "Beauty",
+        "price": 17.00,
+    },
+    {
+        "name": "Dior Sauvage Eau de Parfum",
+        "description": "Sophisticated masculine fragrance with notes of bergamot, pepper, ambroxan, and vanilla. Long-lasting and distinctively fresh.",
+        "category": "Beauty",
+        "price": 110.00,
+    },
+    {
+        "name": "Urban Decay Naked Eyeshadow Palette",
+        "description": "Iconic eyeshadow palette featuring 12 versatile neutral shades in matte and shimmer finishes. Includes a dual-ended brush for easy application.",
+        "category": "Beauty",
+        "price": 54.00,
+    },
+    # Toys & Games (13 products)
+    {
+        "name": "LEGO Star Wars Millennium Falcon",
+        "description": "Detailed LEGO replica of the iconic Star Wars spaceship. Features rotating laser turrets, lowering boarding ramp, and detailed interior sections.",
+        "category": "Toys & Games",
+        "price": 169.99,
+    },
+    {
+        "name": "Nintendo Switch Mario Kart 8 Deluxe",
+        "description": "Action-packed racing game featuring Mario and friends. Includes 48 courses, multiple game modes, and supports up to 8 players in local or online multiplayer.",
+        "category": "Toys & Games",
+        "price": 59.99,
+    },
+    {
+        "name": "Melissa & Doug Wooden Building Blocks Set",
+        "description": "Classic wooden block set with 100 pieces in various shapes and colors. Promotes creativity, problem-solving, and fine motor skills development.",
+        "category": "Toys & Games",
+        "price": 19.99,
+    },
+    {
+        "name": "Hasbro Monopoly Board Game",
+        "description": "Classic property trading board game where players buy, sell, and trade properties to build wealth. Includes game board, tokens, cards, and play money.",
+        "category": "Toys & Games",
+        "price": 19.99,
+    },
+    {
+        "name": "Barbie Dreamhouse",
+        "description": "Three-story dollhouse with 8 rooms, a working elevator, pool with slide, and more than 70 accessories. Features smart home functions with lights and sounds.",
+        "category": "Toys & Games",
+        "price": 199.99,
+    },
+    {
+        "name": "Magic: The Gathering Core Set 2025",
+        "description": "Collectible card game starter set with 350+ unique cards, guidebook, and 2 deck boxes. Perfect for beginners and experienced players alike.",
+        "category": "Toys & Games",
+        "price": 39.99,
+    },
+    {
+        "name": "Nerf Ultra One Motorized Blaster",
+        "description": "High-performance foam dart blaster with motorized firing and 25-dart drum. Fires darts up to 120 feet with enhanced accuracy.",
+        "category": "Toys & Games",
+        "price": 49.99,
+    },
+    {
+        "name": "Exploding Kittens Card Game",
+        "description": "Strategic card game combining kittens, explosions, and laser beams. Fast-paced family-friendly gameplay for 2-5 players.",
+        "category": "Toys & Games",
+        "price": 19.99,
+    },
+    {
+        "name": "Hot Wheels 20-Car Gift Pack",
+        "description": "Collection of 20 die-cast Hot Wheels cars in 1:64 scale. Includes a variety of styles from race cars to fantasy models.",
+        "category": "Toys & Games",
+        "price": 21.99,
+    },
+    {
+        "name": "Dungeons & Dragons Core Rulebook Gift Set",
+        "description": "Comprehensive set of essential rulebooks for the world's greatest roleplaying game. Includes Player's Handbook, Dungeon Master's Guide, and Monster Manual.",
+        "category": "Toys & Games",
+        "price": 169.99,
+    },
+    {
+        "name": "Wingspan Board Game",
+        "description": "Award-winning engine-building board game about attracting birds to your wildlife preserve. Features beautiful artwork and educational content.",
+        "category": "Toys & Games",
+        "price": 60.00,
+    },
+    {
+        "name": "Play-Doh Super Color Pack (20 Cans)",
+        "description": "Set of 20 non-toxic modeling compound cans in a rainbow of colors. Perfect for creative play and developing fine motor skills.",
+        "category": "Toys & Games",
+        "price": 14.99,
+    },
+    {
+        "name": "Rubik's Cube",
+        "description": "Classic 3D combination puzzle that challenges players to solve by aligning all sides with matching colors. Develops spatial awareness and problem-solving skills.",
+        "category": "Toys & Games",
+        "price": 9.99,
+    },
+    # Health (12 products)
+    {
+        "name": "Theragun Elite Massage Gun",
+        "description": "Professional-grade percussion therapy device for muscle treatment and recovery. Features QuietForce Technology, 5 attachments, and a 120-minute battery life.",
+        "category": "Health",
+        "price": 399.00,
+    },
+    {
+        "name": "Peloton Original Bike",
+        "description": "Interactive exercise bike with a 22-inch HD touchscreen for streaming live and on-demand classes. Features variable resistance and built-in speakers.",
+        "category": "Health",
+        "price": 1445.00,
+    },
+    {
+        "name": "Philips Sonicare DiamondClean Smart 9500 Electric Toothbrush",
+        "description": "Advanced electric toothbrush with smart sensors, multiple brushing modes, and pressure sensor. Includes travel case, 3 brush heads, and charging glass.",
+        "category": "Health",
+        "price": 269.99,
+    },
+    {
+        "name": "Withings Body+ Smart Scale",
+        "description": "Wi-Fi-enabled smart scale that tracks weight, body fat, BMI, and more. Syncs with the Health Mate app and supports up to 8 users.",
+        "category": "Health",
+        "price": 99.95,
+    },
+    {
+        "name": "Fitbit Sense 2 Advanced Smartwatch",
+        "description": "Comprehensive health smartwatch with ECG app, EDA stress management, skin temperature sensor, and built-in GPS. Tracks sleep stages and provides a daily Stress Management Score.",
+        "category": "Health",
+        "price": 299.95,
+    },
+    {
+        "name": "Omron Platinum Blood Pressure Monitor",
+        "description": "Clinical-grade blood pressure monitor with dual display and multi-user capabilities. Features advanced accuracy technology and stores up to 100 readings per user.",
+        "category": "Health",
+        "price": 89.99,
+    },
+    {
+        "name": "Oura Ring Generation 3",
+        "description": "Smart ring that tracks sleep, activity, and recovery. Monitors heart rate, body temperature, and blood oxygen levels in a lightweight, durable titanium design.",
+        "category": "Health",
+        "price": 299.00,
+    },
+    {
+        "name": "Waterpik Aquarius Water Flosser",
+        "description": "Advanced water flosser with 10 pressure settings and 7 tips. Clinically proven to be up to 50% more effective than traditional dental floss for gum health.",
+        "category": "Health",
+        "price": 69.99,
+    },
+    {
+        "name": "Hyperice Hypervolt 2 Pro",
+        "description": "Premium percussion massage device with 5 speed settings and interchangeable heads. Features Bluetooth connectivity and a 3-hour battery life for effective recovery.",
+        "category": "Health",
+        "price": 329.00,
+    },
+    {
+        "name": "Coway Airmega 400 Air Purifier",
+        "description": "High-performance air purifier that covers up to 1,560 sq. ft. Features a True HEPA filter that captures 99.97% of particulates and smart mode that adjusts fan speed automatically.",
+        "category": "Health",
+        "price": 449.99,
+    },
+    {
+        "name": "Muse 2 Brain Sensing Headband",
+        "description": "Meditation assistant device that provides real-time feedback on brain activity, heart rate, breathing, and body movements. Helps build a consistent meditation practice.",
+        "category": "Health",
+        "price": 249.99,
+    },
+    {
+        "name": "NordicTrack iSelect Adjustable Dumbbells",
+        "description": "Digital weight system that adjusts from 5 to 50 pounds with voice control via Alexa. Replaces 20 individual dumbbells and features a sleek storage tray.",
+        "category": "Health",
+        "price": 429.00,
+    },
+]
+
+
+# Initialize Faker
+fake = Faker()
+
+seed_everything()
+DB_FILE = Config.Path.DATABASE_PATH
+
+# Remove the database if it exists
+if os.path.exists(DB_FILE):
+    os.remove(DB_FILE)
+
+# Connect to SQLite database
+conn = sqlite3.connect(DB_FILE)
+cursor = conn.cursor()
+
+
+cursor.executescript("""
+-- Products table
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    category TEXT,
+    in_stock BOOLEAN DEFAULT 1,
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Customers table
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    address TEXT,
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Orders table
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    order_date TIMESTAMP NOT NULL,
+    status TEXT NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+-- Order items table (for many-to-many relationship)
+CREATE TABLE order_items (
+    id INTEGER PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    price_per_unit DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+""")
+
+
+products = []
+for i, data in enumerate(PRODUCTS):
+    created_at = datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 730))
+    products.append(
+        {
+            "id": i + 1,
+            "name": data["name"],
+            "description": data["description"],
+            "price": data["price"],
+            "category": data["category"],
+            "in_stock": random.choice([0, 1, 1, 1]),  # 75% chance it's in stock
+            "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
+print(len(products))
+
+# Insert products
+for product in products:
+    cursor.execute(
+        """
+    INSERT INTO products (id, name, description, price, category, in_stock, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """,
+        (
+            product["id"],
+            product["name"],
+            product["description"],
+            product["price"],
+            product["category"],
+            product["in_stock"],
+            product["created_at"],
+        ),
+    )
+
+# Generate customer data
+customers = []
+for i in range(1, 101):
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    created_at = datetime.datetime.now() - datetime.timedelta(days=random.randint(0, 545))
+
+    customers.append(
+        {
+            "id": i,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": f"{first_name.lower()}.{last_name.lower()}{i}@{fake.free_email_domain()}",
+            "phone": fake.phone_number(),
+            "address": fake.address().replace("\n", ", "),
+            "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
+
+# Insert customers
+for customer in customers:
+    cursor.execute(
+        """
+    INSERT INTO customers (id, first_name, last_name, email, phone, address, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """,
+        (
+            customer["id"],
+            customer["first_name"],
+            customer["last_name"],
+            customer["email"],
+            customer["phone"],
+            customer["address"],
+            customer["created_at"],
+        ),
+    )
+
+# Generate orders and order items
+order_statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]
+orders = []
+order_items = []
+
+order_id = 1
+order_item_id = 1
+
+# Start date for orders - 1 year ago
+start_date = datetime.datetime.now() - datetime.timedelta(days=365)
+end_date = datetime.datetime.now()
+
+for _ in range(500):
+    # Select a random customer
+    customer_id = random.randint(1, 100)
+
+    # Generate order date between start_date and end_date
+    order_date = start_date + datetime.timedelta(
+        seconds=random.randint(0, int((end_date - start_date).total_seconds()))
+    )
+    created_at = order_date - datetime.timedelta(minutes=random.randint(0, 2880))
+
+    # Determine order status (more likely to be delivered for older orders)
+    days_ago = (datetime.datetime.now() - order_date).days
+    if days_ago > 30:
+        status = random.choices(order_statuses, weights=[0.05, 0.05, 0.1, 0.75, 0.05])[0]
+    elif days_ago > 7:
+        status = random.choices(order_statuses, weights=[0.05, 0.1, 0.3, 0.5, 0.05])[0]
+    else:
+        status = random.choices(order_statuses, weights=[0.3, 0.4, 0.2, 0.05, 0.05])[0]
+
+    # Generate between 1 and 5 order items
+    num_items = random.randint(1, 5)
+
+    # Keep track of products in this order to avoid duplicates
+    products_in_order = set()
+    total_amount = 0
+
+    order_items_for_order = []
+
+    for _ in range(num_items):
+        # Find a product not already in this order
+        product_id = random.randint(1, 100)
+        while product_id in products_in_order:
+            product_id = random.randint(1, 100)
+
+        products_in_order.add(product_id)
+
+        # Get the product price
+        product = next(p for p in products if p["id"] == product_id)
+        price_per_unit = product["price"]
+
+        # Generate a reasonable quantity
+        quantity = random.randint(1, 3)
+
+        # Calculate item total
+        item_total = price_per_unit * quantity
+        total_amount += item_total
+
+        order_items_for_order.append(
+            {
+                "id": order_item_id,
+                "order_id": order_id,
+                "product_id": product_id,
+                "quantity": quantity,
+                "price_per_unit": price_per_unit,
+            }
+        )
+
+        order_item_id += 1
+
+    # Only create the order if it has items
+    if order_items_for_order:
+        orders.append(
+            {
+                "id": order_id,
+                "customer_id": customer_id,
+                "order_date": order_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "status": status,
+                "total_amount": round(total_amount, 2),
+                "created_at": created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+
+        order_items.extend(order_items_for_order)
+        order_id += 1
+
+# Insert orders
+for order in orders:
+    cursor.execute(
+        """
+    INSERT INTO orders (id, customer_id, order_date, status, total_amount, created_at)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """,
+        (
+            order["id"],
+            order["customer_id"],
+            order["order_date"],
+            order["status"],
+            order["total_amount"],
+            order["created_at"],
+        ),
+    )
+
+# Insert order items
+for item in order_items:
+    cursor.execute(
+        """
+    INSERT INTO order_items (id, order_id, product_id, quantity, price_per_unit)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+        (
+            item["id"],
+            item["order_id"],
+            item["product_id"],
+            item["quantity"],
+            item["price_per_unit"],
+        ),
+    )
+
+# Commit and close
+conn.commit()
+conn.close()
+
+print("Database created with:")
+print("- 100 products")
+print("- 100 customers")
+print(f"- {len(orders)} orders")
+print(f"- {len(order_items)} order items")
+print(f"Database saved to {DB_FILE}")
