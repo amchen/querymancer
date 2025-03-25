@@ -1,8 +1,8 @@
+![Querymancer interface](.github/banner.png)
+
 # Querymancer
 
 AI agent that lets you to talk to your database using natural language. All locally.
-
-![Querymancer interface](.github/banner.png)
 
 Features:
 
@@ -10,6 +10,8 @@ Features:
 - Works with local SQLite database (can be adapted to others)
 - Runs tools (`list_tables`, `sample_table`, `describe_table`, `execute_sql`) and provides reasoning
 - Uses Ollama for LLM inference
+
+Read the full tutorial on MLExpert.io: https://mlexpert.io/v2-bootcamp/build-ai-agent
 
 ## Install
 
