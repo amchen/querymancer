@@ -6,10 +6,16 @@ AI agent that lets you to talk to your database using natural language. All loca
 
 Features:
 
-- AI Agent that can answer questions about your database
-- Works with local SQLite database (can be adapted to others)
-- Runs tools (`list_tables`, `sample_table`, `describe_table`, `execute_sql`) and provides reasoning
-- Uses Ollama for LLM inference
+- Natural language to SQL query conversion
+- Database schema introspection
+- Context-aware conversation
+- Multi-model inference with:
+  - **Groq** (`llama-3.3-70b-versatile`) for general queries
+  - **SambaNova** (`DeepSeek-R1`) for complex analytical queries
+- Advanced optimization strategies:
+  - Dynamic complexity routing
+  - Token optimization pipeline
+  - Parameter auto-tuning
 
 Read the full tutorial on MLExpert.io: [mlexpert.io/v2-bootcamp/build-ai-agent](https://mlexpert.io/v2-bootcamp/build-ai-agent)
 
@@ -67,36 +73,26 @@ This should create a file called `ecommerce.sqlite` in the `data` directory. Her
 
 ![SQLite database schema](.github/db-schema.png)
 
-### Run Ollama
+### API Keys
 
-Querymancer uses Ollama for LLM inference. Watch this video to see how to install Ollama: https://www.youtube.com/watch?v=lmFCVCqOlz8
+Querymancer now uses cloud-based LLM services for inference. You'll need API keys to use these services:
 
-One model you can use is `gemma3-tools:12b`:
+1. **Groq API** - Get your API key from https://console.groq.com/keys
+2. **SambaNova API** - Get your API key from SambaNova's website
 
-```bash
-ollama pull PetrosStav/gemma3-tools:12b
-```
-
-But I found that it won't work well (not good enough tool support). Another good option is Qwen 2.5 7B:
-
-```bash
-ollama pull qwen2.5
-```
-
-Feel free to experiment with other models.
-
-### (Optional) Groq API
-
-You can also use models from Groq (get your API key from https://console.groq.com/keys).
-
-Rename the `.env.example` file to `.env` and add your API key inside:
+Rename the `.env.example` file to `.env` and add your API keys inside:
 
 ```bash
 mv .env.example .env
 ```
 
-Look into the [`config.py`](querymancer/config.py) file to set your preferred model.
+Your `.env` file should contain:
+```
+GROQ_API_KEY=your_groq_api_key_here
+SAMBANOVA_API_KEY=your_sambanova_api_key_here
+```
 
+Look into the [`config.py`](querymancer/config.py) file to set your preferred model.
 
 ## Run the Streamlit app
 
@@ -104,4 +100,3 @@ Run the app:
 
 ```bash
 streamlit run app.py
-```
