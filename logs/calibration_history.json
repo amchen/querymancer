@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2025-03-24T08:00:00.000000",
+    "old_threshold": 0.250,
+    "new_threshold": 0.265,
+    "groq_avg_rating": 4.2,
+    "sambanova_avg_rating": 4.6,
+    "adjustment_reason": "SambaNova performing better on moderately complex queries"
+  },
+  {
+    "timestamp": "2025-03-25T08:00:00.000000",
+    "old_threshold": 0.265,
+    "new_threshold": 0.278,
+    "groq_avg_rating": 4.1,
+    "sambanova_avg_rating": 4.7,
+    "adjustment_reason": "Continuing to shift more queries to SambaNova based on performance"
+  },
+  {
+    "timestamp": "2025-03-26T08:00:00.000000",
+    "old_threshold": 0.278,
+    "new_threshold": 0.270,
+    "groq_avg_rating": 4.3,
+    "sambanova_avg_rating": 4.5,
+    "adjustment_reason": "Slight adjustment back as Groq improved on medium complexity queries"
+  }
+]

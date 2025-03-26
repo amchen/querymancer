@@ -2,9 +2,77 @@
   "selections": [
     {
       "timestamp": "2025-03-26T22:41:44.772727",
-      "query": "032a54e305ac38040718fd655c1b9897",
+      "query": "What is the capital of France?",
       "complexity": 0.033,
       "selected_model": "groq"
+    },
+    {
+      "timestamp": "2025-03-26T22:42:15.123456",
+      "query": "Can you explain how quantum computing works?",
+      "complexity": 0.215,
+      "selected_model": "groq"
+    },
+    {
+      "timestamp": "2025-03-26T22:43:30.654321",
+      "query": "Write a complex SQL query to analyze customer purchase patterns across multiple tables with joins and window functions to identify the top spending customers by category over the last quarter.",
+      "complexity": 0.782,
+      "selected_model": "sambanova"
+    },
+    {
+      "timestamp": "2025-03-26T22:45:12.987654",
+      "query": "What's the weather like today?",
+      "complexity": 0.028,
+      "selected_model": "groq"
+    },
+    {
+      "timestamp": "2025-03-26T22:47:45.246810",
+      "query": "Create a data analysis pipeline in Python to process time series data, handle missing values, and generate forecasts using ARIMA models with proper validation techniques.",
+      "complexity": 0.653,
+      "selected_model": "sambanova"
+    },
+    {
+      "timestamp": "2025-03-26T22:49:20.135792",
+      "query": "Who won the last World Cup?",
+      "complexity": 0.047,
+      "selected_model": "groq"
+    },
+    {
+      "timestamp": "2025-03-26T22:50:05.975310",
+      "query": "Develop a comprehensive machine learning model to predict customer churn based on historical transaction data, demographic information, and behavioral patterns.",
+      "complexity": 0.587,
+      "selected_model": "sambanova"
+    }
+  ],
+  "feedback": [
+    {
+      "timestamp": "2025-03-26T22:42:10.123456",
+      "query": "What is the capital of France?",
+      "rating": 5,
+      "comments": "Perfect answer, very quick response"
+    },
+    {
+      "timestamp": "2025-03-26T22:43:20.654321",
+      "query": "Can you explain how quantum computing works?",
+      "rating": 4,
+      "comments": "Good explanation but could use more examples"
+    },
+    {
+      "timestamp": "2025-03-26T22:45:00.987654",
+      "query": "Write a complex SQL query to analyze customer purchase patterns across multiple tables with joins and window functions to identify the top spending customers by category over the last quarter.",
+      "rating": 5,
+      "comments": "Excellent detailed SQL query with clear explanations"
+    },
+    {
+      "timestamp": "2025-03-26T22:46:30.246810",
+      "query": "What's the weather like today?",
+      "rating": 3,
+      "comments": "Answer was too generic, didn't ask for my location"
+    },
+    {
+      "timestamp": "2025-03-26T22:49:15.135792",
+      "query": "Create a data analysis pipeline in Python to process time series data, handle missing values, and generate forecasts using ARIMA models with proper validation techniques.",
+      "rating": 4,
+      "comments": "Very comprehensive solution but slightly complex implementation"
     }
   ]
 }
