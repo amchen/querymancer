@@ -16,6 +16,8 @@ Features:
   - Dynamic complexity routing
   - Token optimization pipeline
   - Parameter auto-tuning
+  - Performance monitoring
+  - Threshold calibration
 
 Read the full tutorial on MLExpert.io: [mlexpert.io/v2-bootcamp/build-ai-agent](https://mlexpert.io/v2-bootcamp/build-ai-agent)
 
@@ -96,7 +98,51 @@ Look into the [`config.py`](querymancer/config.py) file to set your preferred mo
 
 ## Run the Streamlit app
 
-Run the app:
-
 ```bash
 streamlit run app.py
+```
+
+## Advanced Optimization Features
+
+Querymancer includes several advanced optimization strategies to enhance performance and reduce costs:
+
+### 1. Dynamic Complexity Router
+
+Intelligently routes queries to either Groq (for simple/general queries) or SambaNova (for complex queries) based on multi-dimensional complexity analysis:
+
+- Analyzes query length, pattern complexity, SQL complexity, and cognitive load
+- Applies domain-specific modifiers for SQL, data science, reporting, and simple lookups
+- Uses LRU caching to avoid redundant complexity analysis
+
+### 2. Token Optimization Pipeline
+
+Reduces API costs by optimizing token usage:
+
+- Eliminates redundant qualifiers and verbosity in queries
+- Applies domain-specific optimizations for SQL and data science queries
+- Prunes conversation context based on relevance and recency
+- Dynamically adjusts model parameters based on query complexity
+
+### 3. Performance Monitoring
+
+Tracks model selection decisions and response quality:
+
+- Records which model was selected for each query and its complexity score
+- Collects user feedback on response quality (1-5 rating system)
+- Provides historical performance metrics by model
+- Supports data-driven optimization decisions
+
+### 4. Threshold Calibration
+
+Dynamically adjusts complexity thresholds based on real-world usage patterns:
+
+- Analyzes historical performance data to determine optimal thresholds
+- Automatically calibrates routing thresholds based on model performance
+- Implements gradual adjustments to prevent threshold oscillation
+- Maintains calibration history for performance tracking
+
+## Current Models
+
+The application currently uses:
+- Groq's llama-3.3-70b-versatile for general queries
+- SambaNova's DeepSeek-R1 for complex analytical queries
