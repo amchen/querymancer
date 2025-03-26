@@ -1,0 +1,8 @@
+================================================================================
+SAMBANOVA API TEST
+================================================================================
+Testing model: DeepSeek-R1
+Query: Analyze the customer purchase patterns based on demographic data and create a segmentation report.
+--------------------------------------------------------------------------------
+Sending request to SambaNova API...
+Response status code: 200

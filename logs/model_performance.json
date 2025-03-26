@@ -1,0 +1,10 @@
+{
+  "selections": [
+    {
+      "timestamp": "2025-03-26T22:41:44.772727",
+      "query": "032a54e305ac38040718fd655c1b9897",
+      "complexity": 0.033,
+      "selected_model": "groq"
+    }
+  ]
+}

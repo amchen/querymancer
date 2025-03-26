@@ -1,0 +1,74 @@
+[
+  {
+    "query": "List all tables in the database",
+    "complexity_score": 0.054,
+    "dimensions": {
+      "length": 0.12,
+      "patterns": 0.0,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.3
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  },
+  {
+    "query": "What's the schema of the users table?",
+    "complexity_score": 0.0455,
+    "dimensions": {
+      "length": 0.14,
+      "patterns": 0.0,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.175
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  },
+  {
+    "query": "Count the number of orders in the database",
+    "complexity_score": 0.07200000000000001,
+    "dimensions": {
+      "length": 0.16,
+      "patterns": 0.0,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.4
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  },
+  {
+    "query": "Analyze the purchase patterns across different customer segments and identify trends in the last 12 months",
+    "complexity_score": 0.30400000000000005,
+    "dimensions": {
+      "length": 0.32,
+      "patterns": 0.4,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.8
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  },
+  {
+    "query": "Create a cohort analysis of customer retention rates by signup month and calculate the month-over-month change",
+    "complexity_score": 0.22400000000000003,
+    "dimensions": {
+      "length": 0.32,
+      "patterns": 0.2,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.8
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  },
+  {
+    "query": "Find correlations between customer demographics and product categories with the highest profit margins",
+    "complexity_score": 0.197,
+    "dimensions": {
+      "length": 0.26,
+      "patterns": 0.2,
+      "sql_complexity": 0.0,
+      "cognitive_load": 0.65
+    },
+    "selected_provider": "Groq",
+    "threshold": 0.6
+  }
+]

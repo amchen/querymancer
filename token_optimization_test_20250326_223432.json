@@ -1,0 +1,34 @@
+[
+  {
+    "original_query": "Could you please tell me what are all the tables in the database?",
+    "optimized_query": "what are all the tables in the database?",
+    "original_tokens": 13,
+    "optimized_tokens": 8,
+    "token_reduction": 5,
+    "reduction_percentage": 38.46153846153847
+  },
+  {
+    "original_query": "I was wondering if you could provide me with information about the schema of the users table, thanks in advance!",
+    "optimized_query": "you could provide me with information about the schema of the users table, thanks in advance!",
+    "original_tokens": 20,
+    "optimized_tokens": 16,
+    "token_reduction": 4,
+    "reduction_percentage": 20.0
+  },
+  {
+    "original_query": "I would really like to know the count of orders in the database if that's not too much trouble",
+    "optimized_query": "I would like to know the count of orders in the database if that's not too much trouble",
+    "original_tokens": 19,
+    "optimized_tokens": 18,
+    "token_reduction": 1,
+    "reduction_percentage": 5.263157894736842
+  },
+  {
+    "original_query": "Please analyze the very complex and detailed purchase patterns across different customer segments",
+    "optimized_query": "Please analyze the complex and detailed purchase patterns across different customer segments",
+    "original_tokens": 13,
+    "optimized_tokens": 12,
+    "token_reduction": 1,
+    "reduction_percentage": 7.6923076923076925
+  }
+]
