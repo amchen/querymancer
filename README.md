@@ -70,6 +70,10 @@ You can use any SQLlite database. This project comes with a sample script that c
 ```sh
 bin/create-database
 ```
+or
+```python
+python data/create-database.py
+```
 
 This should create a file called `ecommerce.sqlite` in the `data` directory. Here's a diagram of the database schema:
 
@@ -82,10 +86,10 @@ Querymancer now uses cloud-based LLM services for inference. You'll need API key
 1. **Groq API** - Get your API key from https://console.groq.com/keys
 2. **SambaNova API** - Get your API key from SambaNova's website
 
-Rename the `.env.example` file to `.env` and add your API keys inside:
+Copy the `.env.example` file to `.env` and add your API keys inside:
 
 ```bash
-mv .env.example .env
+cp .env.example .env
 ```
 
 Your `.env` file should contain:
@@ -146,3 +150,7 @@ Dynamically adjusts complexity thresholds based on real-world usage patterns:
 The application currently uses:
 - Groq's llama-3.3-70b-versatile for general queries
 - SambaNova's DeepSeek-R1 for complex analytical queries
+
+## Latest Notes
+- Got QueryMancer working for complex queries with DeepSeek model.
+- Updated to use langchain-sambanova.

@@ -597,6 +597,7 @@ class DynamicComplexityRouter:
 
         # Determine which model to use
         use_complex_model = complexity_score >= self.threshold
+        # use_complex_model = True
         selected_model = "sambanova" if use_complex_model else "groq"
 
         # Record the selection decision

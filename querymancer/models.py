@@ -7,7 +7,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from langchain_core.callbacks.manager import CallbackManagerForLLMRun
 from langchain_core.outputs.llm_result import LLMResult
 from langchain_groq import ChatGroq
-
+from langchain_sambanova import ChatSambaNovaCloud
 from querymancer.config import ModelConfig, ModelProvider
 from querymancer.optimizations import TokenOptimizationPipeline
 
@@ -232,8 +232,15 @@ def create_llm(model_config: ModelConfig) -> BaseChatModel:
             api_key=os.getenv("GROQ_API_KEY"),
         )
     elif model_config.provider == ModelProvider.SAMBANOVA:
+        return ChatSambaNovaCloud(
+            model=model_config.name,
+            max_tokens=1024,
+            temperature=model_config.temperature,
+        )
+        """
         return ChatSambaNova(
             model=model_config.name,
             temperature=model_config.temperature,
             api_key=os.getenv("SAMBANOVA_API_KEY"),
         )
+        """

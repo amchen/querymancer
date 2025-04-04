@@ -18,7 +18,8 @@ class ModelConfig:
 
 
 LLAMA_3_GROQ = ModelConfig("llama-3.3-70b-versatile", 0.0, ModelProvider.GROQ)
-DEEPSEEK_R1 = ModelConfig("DeepSeek-R1", 0.0, ModelProvider.SAMBANOVA)
+# DEEPSEEK_R1 = ModelConfig("DeepSeek-R1", 0.0, ModelProvider.SAMBANOVA)
+DEEPSEEK_R1 = ModelConfig("DeepSeek-R1-Distill-Llama-70B", 0.0, ModelProvider.SAMBANOVA)
 
 
 class Config:
